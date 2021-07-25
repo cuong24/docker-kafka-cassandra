@@ -41,4 +41,24 @@ curl -s \
     "topic.weather.kafkapipeline.weatherreport.consistencyLevel": "LOCAL_QUORUM"
   }
 }'
+echo "Starting Faker Sink"
+curl -s \
+     -X POST http://localhost:8083/connectors \
+     -H "Content-Type: application/json" \
+     -d '{
+  "name": "fakersink",
+  "config": {
+    "connector.class": "com.datastax.oss.kafka.sink.CassandraSinkConnector",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable":"false",
+    "tasks.max": "10",
+    "topics": "faker",
+    "contactPoints": "cassandradb",
+    "loadBalancing.localDc": "datacenter1",
+    "topic.faker.kafkapipeline.fakerdata.mapping": "name=value.name, address=value.address, year=value.year",
+    "topic.faker.kafkapipeline.fakerdata.consistencyLevel": "LOCAL_QUORUM"
+  }
+}'
 echo "Done."
